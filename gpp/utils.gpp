@@ -1,3 +1,4 @@
 <#mode standard|cpp>
 
 #define tmpl #exec erb #1
+#define time #tmpl tmpls/time.erb

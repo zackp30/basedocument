@@ -1,8 +1,7 @@
-<#include "gpp/utils.gpp">
-
+<#include "gpp/utils.gppb">
 <#ifdef HTML>
-    <#include "gpp/html.gpp">
+    <#include "gpp/html.gppb">
 <#endif>
 <#ifdef TEX>
-    <#include "gpp/tex.gpp">
+    <#include "gpp/tex.gppb">
 <#endif>

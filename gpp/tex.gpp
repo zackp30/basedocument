@@ -1,6 +1,0 @@
-<#mode standard|cpp>
-#define colorm(clr,text) \
-\begin{@empty} \
-{\color{clr}text} \
-\end{@empty}
-

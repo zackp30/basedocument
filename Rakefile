@@ -5,22 +5,34 @@ Dir.glob('**/*.md') { |f| pdfs << f.sub(/\.md$/, '.pdf') }
 pdfs = pdfs.sort
 task :pdf => pdfs
 
+gpp_command = "gpp -H -x -DTEX=1 --include gpp.gppb"
+
+macros = []
+Dir.glob('**/*.gpp') { |f| macros << f.sub(/\.gpp$/, '.gppb') }
+task :macro => macros
+
 extensions = "tex_math_single_backslash+footnotes+raw_tex+grid_tables+implicit_figures+fenced_code_blocks+definition_lists+pipe_tables"
 filters = ['pandoc-plantuml-filter']
 filters = filters.join ' --filter '
 
 errors = []
 
+rule '.gppb' => '.gpp' do |t|
+  sh "tr '\n' ' ' < #{t.source} > #{t.name}"
+  sh "sed -r 's/>\s+</></g' #{t.name} > #{t.name + '.tmp'}"
+  sh "mv #{t.name + '.tmp'} #{t.name}"
+end
+
 
 rule '.pdf' => '.md' do |t| 
-  sh "cat #{t.source} | gpp -H -x -DTEX=1 | pandoc  --template latex.tex -S -f markdown+#{extensions} -o #{t.name} --filter pandoc-citeproc --filter #{filters}" do |o, r|
+  sh "cat #{t.source} | #{gpp_command} | pandoc  --template latex.tex -S -f markdown+#{extensions} -o #{t.name} --filter pandoc-citeproc --filter #{filters}" do |o, r|
     errors << "Error on #{t.name}: #{r}" if ! o
   end
 end
 
 
 rule '.pdf' => '.slide.md' do |t| 
-  sh "cat #{t.source} | gpp -H -x -DTEX=1 | pandoc  -f markdown+#{extensions} -t beamer -o #{t.name}  --filter pandoc-citeproc -S" do |o, r|
+  sh "cat #{t.source} | #{gpp_command} | pandoc  -f markdown+#{extensions} -t beamer -o #{t.name}  --filter pandoc-citeproc -S" do |o, r|
     errors << "Error on #{t.name}: #{r}" if ! o
   end
 end

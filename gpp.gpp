@@ -2,6 +2,3 @@
 <#ifdef HTML>
     <#include "gpp/html.gppb">
 <#endif>
-<#ifdef TEX>
-    <#include "gpp/tex.gppb">
-<#endif>

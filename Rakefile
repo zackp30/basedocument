@@ -19,22 +19,12 @@ filters = ['pandoc-citeproc', 'pandoc-plantuml-filter'].join ' --filter '
 
 rule '.gppb' => '.gpp' do |t|
   # Remove all whitespace and newlines from macro files
-  sh "tr '\n' ' ' < #{t.source} > #{t.name}"
+  sh "tr -d '\n' < #{t.source} > #{t.name}"
   sh "sed -r 's/>\s+</></g' #{t.name} > #{t.name + '.tmp'}"
   sh "mv #{t.name + '.tmp'} #{t.name}"
 end
 
 sh 'mkdir -vp build/books' unless Dir.exist? 'build/books'
-
-# def determine_source(f)
-#   book_regex2 = /(.*)-(\d*).*\.book\.pdf/ # defined above, but a very weird thing happens
-#   t = book_regex2.match f
-#   "build/#{t[1]}.md"
-# end
-
-# rule '.book' => method(:determine_source)  do |t|
-#   puts t.source
-# end
 
 books.each { |f| cp f, "build/books/#{File.basename(f, '.md') + '.book'}" unless /^build\//.match f }
 booksp = Dir.glob('build/**/*.book').map { |f| f.sub /\.book$/, '.bookp' }
@@ -49,7 +39,7 @@ end
 rule '.pdf' => '.md' do |t|
   sh "cat #{t.source} | #{gpp_command} | pandoc  --template latex.tex -S -f markdown+#{extensions} -o #{t.name} --filter #{filters}" unless book_regex.match t.source
   cp t.name, '.' unless book_regex.match t.source
-  rm t.source if /^build\//.match t.source
+  # rm t.source if /^build\//.match t.source
 end
 
 rule '.pdf' => '.slide.md' do |t|

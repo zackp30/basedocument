@@ -37,7 +37,8 @@ sh 'mkdir -vp build/books' unless Dir.exist? 'build/books'
 # end
 
 books.each { |f| cp f, "build/books/#{File.basename(f, '.md') + '.book'}" unless /^build\//.match f }
-booksp = Dir.glob('build/**/*.book').map { |f| f.sub /.book$/, '.bookp' }
+booksp = Dir.glob('build/**/*.book').map { |f| f.sub /\.book$/, '.bookp' }
+         .sort_by { |i| /(.*)-(\d*).*\.bookp/.match(i)[2].to_i  }
 task bookp: booksp
 rule '.bookp' => '.book' do |t|
   r = book_regex2.match t.source
@@ -47,8 +48,8 @@ end
 
 rule '.pdf' => '.md' do |t|
   sh "cat #{t.source} | #{gpp_command} | pandoc  --template latex.tex -S -f markdown+#{extensions} -o #{t.name} --filter #{filters}" unless book_regex.match t.source
-  cp t.name, '..' if book_regex.match t.source
-  rm t.source
+  cp t.name, '.' unless book_regex.match t.source
+  rm t.source if /^build\//.match t.source
 end
 
 rule '.pdf' => '.slide.md' do |t|

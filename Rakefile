@@ -5,6 +5,15 @@ pdfs = Dir.glob('**/*.md').map { |f| f.sub(/\.md$/, '.pdf') }
 books = Dir.glob('**/*.md').map { |f| f if book_regex.match(f) }
 books.compact!
 pdfs -= books
+csons = []
+
+Dir.glob('data/**/*.cson') { |c| csons << c.sub(/\.cson$/, '.json') }
+csons = csons.sort
+task :cson => csons
+
+rule '.json' => '.cson' do |csontojson|
+  sh "cson2json #{csontojson.source} >| #{csontojson.name}"
+end
 
 pdfs = pdfs.sort
 task pdf: pdfs
@@ -38,8 +47,12 @@ end
 
 rule '.pdf' => '.md' do |t|
   sh "cat #{t.source} | #{gpp_command} | pandoc  --template latex.tex -S -f markdown+#{extensions} -o #{t.name} --filter #{filters}" unless book_regex.match t.source
-  cp t.name, '.' unless book_regex.match t.source
-  # rm t.source if /^build\//.match t.source
+  mv t.name, '.' if /^build\//.match t.source
+  rm t.source if /^build\//.match t.source
+end
+
+rule '.epub' => '.pdf' do |t|
+  sh "cat build/books/#{File.basename(t.source, '.pdf') + '.md'} | #{gpp_command} | pandoc -S --template default.epub -f markdown+#{extensions} -o #{t.name} --filter #{filters} --epub-stylesheet epub.css" # unless book_regex.match t.source
 end
 
 rule '.pdf' => '.slide.md' do |t|

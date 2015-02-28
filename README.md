@@ -11,3 +11,8 @@ This is a base document for the use of Zack Piper, and potentially may be of use
 - General Preprocessor (GPP) (provides macros)
 - Rake (Ruby make) (build system)
 - ERB (more advanced "macros") Last updated: <#time>.
+
+
+# TODO
+
+- Switch from GPP to m4 (currently waiting on bug to be fixed concerning `changeword`)

@@ -1,6 +1,6 @@
 task default: :pdf
-book_regex = /(.*)-(\d*).*\.md/
-book_regex2 = /(.*)-(\d*).*\.book/
+book_regex = /(.*)-(\d*)-.*\.md/
+book_regex2 = /(.*)-(\d*)-.*\.book/
 pdfs = Dir.glob('**/*.md').map { |f| f.sub(/\.md$/, '.pdf') }
 books = Dir.glob('**/*.md').map { |f| f if book_regex.match(f) }
 books.compact!
@@ -39,7 +39,7 @@ sh 'mkdir -vp build/books' unless Dir.exist? 'build/books'
 
 books.each { |f| cp f, "build/books/#{File.basename(f, '.md') + '.book'}" unless /^build\//.match f }
 booksp = Dir.glob('build/**/*.book').map { |f| f.sub /\.book$/, '.bookp' }
-         .sort_by { |i| /(.*)-(\d*).*\.bookp/.match(i)[2].to_i  }
+         .sort_by { |i| /(.*)-(\d*)-.*\.bookp/.match(i)[2].to_i  }
 task bookp: booksp
 rule '.bookp' => '.book' do |t|
   r = book_regex2.match t.source

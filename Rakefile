@@ -14,11 +14,23 @@ task :cson => csons
 rule '.json' => '.cson' do |csontojson|
   sh "cat #{csontojson.source} | gpp -H -x -DCSON=1 --include gpp.gppb >> build/tmp.cson"
   sh "cson2json build/tmp.cson >| #{csontojson.name}"
-  rm "build/tmp.cson"
+  rm 'build/tmp.cson'
 end
 
 pdfs = pdfs.sort
 task pdf: pdfs
+json2csvs = Dir.glob('data/forplotting/**/*.json').map { |f| f.sub /\.json$/, '.csv' }
+task json2csv: json2csvs
+unless Dir.glob('data/forplotting/*').empty?
+  json2csvs.each do |f|
+    cp f.sub(/\.csv$/, '.json'), f.sub(/\.csv$/, '.jsonfp')
+  end
+end
+rule '.csv' => '.jsonfp' do |t|
+  sh "json2csv convert #{t.source}"
+  mv t.source.sub(/$/, '.csv'), t.name
+  rm t.source
+end
 
 gpp_command = 'gpp -H -x -DTEX=1 --include gpp.gppb'
 

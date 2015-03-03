@@ -33,3 +33,4 @@ Session.vim
 build/
 
 *.jsonfp
+plotimg-*

@@ -37,7 +37,7 @@ gpp_command = 'gpp -H -x -DTEX=1 --include gpp.gppb'
 macros = Dir.glob('**/*.gpp').map { |f| f.sub(/\.gpp$/, '.gppb') }
 task macro: macros
 
-extensions = 'tex_math_single_backslash+footnotes+raw_tex+grid_tables+implicit_figures+fenced_code_blocks+definition_lists+pipe_tables'
+extensions = 'tex_math_single_backslash+footnotes+raw_tex+grid_tables+implicit_figures+fenced_code_blocks+definition_lists+pipe_tables+superscript+subscript+strikeout'
 filters = ['pandoc-citeproc', 'pandoc-plantuml-filter'].join ' --filter '
 
 rule '.gppb' => '.gpp' do |t|
